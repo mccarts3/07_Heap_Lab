@@ -74,28 +74,46 @@ Heap<Pri,T>::~Heap(){
 template<class Pri, class T>
 Heap<Pri,T>::removeAll() {
     while(numItems > 0) {
+        //remove() returns something, do i need to take care of it?
         remove();
     }
 }
 
 template<class Pri, class T>
 void Heap<Pri,T>::grow(){
-    //TODO
+    arrSize = arrSize*2;
+    pair<Pri, T>* tempArray = new pair<Pri, T>[arrSize];
+    
+    for(int i=0; i < numItems; i++) {
+        tempArray[i] = backingArray[i];
+    }
+    
+    backingArray = tempArray;
+    delete tempArray;
 }
 
 template<class Pri, class T>
 void Heap<Pri,T>::add(std::pair<Pri,T> toAdd){
-    //Call bubbleUp or trickleDown depending on how it fits
-    //in the index
+    if(numItems == arrSize) {
+        grow();
+    }
     
+    backingArray[numItem] = toAdd;
     numItems++;
+    bubbleUp(numItems-1);
 }
 
+//COPIED FROM ABOVE - Check the item at index, and make
+// sure it is in the right place.  If not, swap it up the
+//"tree" of the heap until you find the right place
 template<class Pri, class T>
 void Heap<Pri,T>::bubbleUp(unsigned long index){
     //recursive?
 }
 
+//COPIED FROM ABOVE - Check the item at index, and make
+// sure it is in the right place.  If not, swap it down
+// the "tree" of the heap until you find the right place
 template<class Pri, class T>
 void Heap<Pri,T>::trickleDown(unsigned long index){
     //recursive?
@@ -107,7 +125,7 @@ std::pair<Pri,T> Heap<Pri,T>::remove(){
         throw std::string("In remove(), tried to remove from an empty array.");
     }
     else {
-        //TODO
+        //swap the first and the last, then remove the last
         std::pair<Pri,T> tmp;
         
         numItems--;
