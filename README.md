@@ -18,7 +18,7 @@ Questions
 
 #### 1. Which of the above requirements work, and which do not? For each requirement, write a brief response.
 
-1. TODO
+1. Add works and is O(log n) because bubbleUp is called recursively with a max amount of times of being called log n. Remove almost works, but there is a problem with deleting the values that are removed.  It still runs O(log n) time because trickleDown is called a max of log n times.
 2. No memory is leaked.  Any arrays and their contents are destroyed in destructors or with delete statements when they are no longer needed.
 
 #### 2. Exercises 10.1 and 10.2 from http://opendatastructures.org/ods-cpp/10_3_Discussion_Exercises.html
