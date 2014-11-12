@@ -113,14 +113,32 @@ void Heap<Pri,T>::bubbleUp(unsigned long index){
     int parent = (index-1)/2;
     
     if(backingArray[parent].first > backingArray[index].first) {
-        std::pair<Pri,T> tempPair = swap(parent, index);
+        backingArray[parent].swap(backingArray[index]);
         bubbleUp(parent);
     }
 }
 
 template<class Pri, class T>
 void Heap<Pri,T>::trickleDown(unsigned long index){
-    //recursive?
+    std::pair<Pri, T> tempPair;
+    int leftIndex = (2*index)+1;
+    int rightIndex = (2*index)+2;
+	
+    if((backingArray[rightIndex].first > backingArray[index].first)
+       && (backingArray[rightIndex].first > backingArray[leftIndex].first)) {
+        
+        backingArray[rightIndex].swap(backingArray[index]);
+        if(rightIndex < numItems - 1) {
+            trickleDown(rightIndex);
+        }
+    }
+    else if(backingArray[leftIndex].first > backingArray[index].first) {
+        
+        backingArray[leftIndex].swap(backingArray[index]);
+        if(leftIndex < numItems - 1) {
+            trickleDown(leftIndex);
+        }
+    }
 }
 
 template<class Pri, class T>
@@ -131,10 +149,11 @@ std::pair<Pri,T> Heap<Pri,T>::remove(){
     else {
         //Swaps the first and last pairs, remove the last item
         //and return it at the end of remove()
-        std::pair<Pri,T> removedPair = swap(0, numItems-1);
+        backingArray[0].swap(backingArray[numItems-1]);
+        std::pair<Pri,T> removedPair = backingArray[numItems-1];
         
         //make the last index a null pair
-        backingArray[numItems-1] = NULL;
+        //STILL NEED TO DO
         
         //Trickle down from the first index
         trickleDown(0);
