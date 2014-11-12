@@ -52,6 +52,8 @@ private:
 /***********************
  * Originally Heap.ipp *
  **********************/
+//Used http://www.cplusplus.com/reference/utility/pair/ as a reference for the
+//pair class
 #include <string>
 
 template<class Pri, class T>
@@ -60,36 +62,35 @@ Heap<Pri,T>::Heap(){
     arrSize = START_SIZE;
     
     //Creates a pointer variable of type pair<Pri, T>
-	backingArray = new pair<Pri, T>[arrSize];
+	backingArray = new std::pair<Pri,T>[arrSize];
 }
 
 template<class Pri, class T>
 Heap<Pri,T>::~Heap(){
     //No memory leak by deleting all elements and then backingArray
     removeAll();
-    delete backingArray;
+    delete[] backingArray;
 }
 
 
 template<class Pri, class T>
-Heap<Pri,T>::removeAll() {
+void Heap<Pri,T>::removeAll() {
     while(numItems > 0) {
-        //remove() returns something, do i need to take care of it?
-        remove();
+        std::pair<Pri,T> temp = remove();
     }
 }
 
 template<class Pri, class T>
 void Heap<Pri,T>::grow(){
     arrSize = arrSize*2;
-    pair<Pri, T>* tempArray = new pair<Pri, T>[arrSize];
+    std::pair<Pri, T>* tempArray = backingArray;
+    backingArray = new std::pair<Pri, T>[arrSize];
     
     for(int i=0; i < numItems; i++) {
-        tempArray[i] = backingArray[i];
+        add(tempArray[i]);
     }
     
-    backingArray = tempArray;
-    delete tempArray;
+    delete[] tempArray;
 }
 
 template<class Pri, class T>
@@ -98,22 +99,25 @@ void Heap<Pri,T>::add(std::pair<Pri,T> toAdd){
         grow();
     }
     
-    backingArray[numItem] = toAdd;
+    backingArray[numItems] = toAdd;
+    bubbleUp(numItems);
     numItems++;
-    bubbleUp(numItems-1);
 }
 
-//COPIED FROM ABOVE - Check the item at index, and make
-// sure it is in the right place.  If not, swap it up the
-//"tree" of the heap until you find the right place
 template<class Pri, class T>
 void Heap<Pri,T>::bubbleUp(unsigned long index){
-    //recursive?
+    //Base case since the first index has no parent
+    if(index <= 0) {
+        return;
+    }
+    int parent = (index-1)/2;
+    
+    if(backingArray[parent].first > backingArray[index].first) {
+        std::pair<Pri,T> tempPair = swap(parent, index);
+        bubbleUp(parent);
+    }
 }
 
-//COPIED FROM ABOVE - Check the item at index, and make
-// sure it is in the right place.  If not, swap it down
-// the "tree" of the heap until you find the right place
 template<class Pri, class T>
 void Heap<Pri,T>::trickleDown(unsigned long index){
     //recursive?
@@ -125,11 +129,17 @@ std::pair<Pri,T> Heap<Pri,T>::remove(){
         throw std::string("In remove(), tried to remove from an empty array.");
     }
     else {
-        //swap the first and the last, then remove the last
-        std::pair<Pri,T> tmp;
+        //Swaps the first and last pairs, remove the last item
+        //and return it at the end of remove()
+        std::pair<Pri,T> removedPair = swap(0, numItems-1);
         
+        //make the last index a null pair
+        backingArray[numItems-1] = NULL;
+        
+        //Trickle down from the first index
+        trickleDown(0);
         numItems--;
-        return tmp;
+        return removedPair;
     }
 }
 
