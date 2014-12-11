@@ -1,15 +1,18 @@
+/* 
+ * This is a priority queue, which means that as items are removed in order
+ * of decreasing priority.
+ *
+ * Author 2: Scott McCartney
+ * Date 2: 2014/12/10
+ * All code was written by me for CSE274.
+ */
 #include "Queue.h"
 #include <utility>
 
 //This should be the initial arrSize
 #define START_SIZE 10
 
-/*
- * This is a priority queue, which means that as items are removed in order
- * of decreasing priority.
- *
- *
- */
+
 template<class Pri, class T>
 class Heap : public Queue<std::pair<Pri, T> > {
 public:
