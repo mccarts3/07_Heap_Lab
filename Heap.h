@@ -47,9 +47,6 @@ private:
     // If not, swap it down the "tree" of the heap until you find the right
     // place
     void trickleDown(unsigned long index);
-    
-    //Used in the destructor to delete all the elements of the heap
-    void removeAll();
 };
 
 /***********************
@@ -70,17 +67,8 @@ Heap<Pri,T>::Heap(){
 
 template<class Pri, class T>
 Heap<Pri,T>::~Heap(){
-    //No memory leak by deleting all elements and then backingArray
-    removeAll();
+    //No memory leak by deleting backingArray
     delete[] backingArray;
-}
-
-
-template<class Pri, class T>
-void Heap<Pri,T>::removeAll() {
-    while(numItems > 0) {
-        std::pair<Pri,T> temp = remove();
-    }
 }
 
 template<class Pri, class T>
@@ -89,7 +77,8 @@ void Heap<Pri,T>::grow(){
     std::pair<Pri, T>* tempArray = backingArray;
     backingArray = new std::pair<Pri, T>[arrSize];
     
-    for(int i=0; i < numItems; i++) {
+	int currentItems = numItems;
+    for(int i=0; i < currentItems; i++) {
         add(tempArray[i]);
     }
     
@@ -127,9 +116,7 @@ void Heap<Pri,T>::trickleDown(unsigned long index){
     int leftIndex = (2*index)+1;
     int rightIndex = (2*index)+2;
 	
-    if((backingArray[rightIndex].first > backingArray[index].first)
-       && (backingArray[rightIndex].first > backingArray[leftIndex].first)) {
-        
+    if(rightIndex == numItems) {
         backingArray[rightIndex].swap(backingArray[index]);
         if(rightIndex < numItems - 1) {
             trickleDown(rightIndex);
@@ -152,15 +139,12 @@ std::pair<Pri,T> Heap<Pri,T>::remove(){
     else {
         //Swaps the first and last pairs, remove the last item
         //and return it at the end of remove()
+		std::pair<Pri,T> removedPair = backingArray[0];
         backingArray[0].swap(backingArray[numItems-1]);
-        std::pair<Pri,T> removedPair = backingArray[numItems-1];
         
-        //make the last index a null pair
-        //STILL NEED TO DO
-        
+        numItems--;
         //Trickle down from the first index
         trickleDown(0);
-        numItems--;
         return removedPair;
     }
 }
